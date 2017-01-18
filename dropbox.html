@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='x-ua-compatible' content='ie=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+      html {
+        font: normal 16px/1.4 Arial, "Helvetica Neue", Helvetica, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        overflow-y: scroll;color: #000;
+      }
+      html,body {
+        height: 100%;
+        min-height: 100%;
+      }
+      body {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        margin: 0;
+        padding: 20px;
+        background-color: #dedede;
+        box-sizing: border-box;
+      }
+      a { background-color: transparent; }
+      a:active,
+      a:hover { outline: 0; }
+      a {
+        color: #2498e3;
+        text-decoration: none;
+        cursor: pointer;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      a:hover {
+        color: #188dd9;
+        text-decoration: underline;
+      }
+      h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 24px;
+        line-height: 1;
+        text-align: center;
+      }
+      main {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -ms-grid-row-align: center;
+        align-items: center;
+        margin: auto;
+        padding: 20px;
+        max-width: 900px;
+        background: #fff;
+        border-radius: 0.625rem;
+        box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        -webkit-animation: bounceInUp 1s;
+        animation: bounceInUp 1s;
+      }
+      figure {
+        flex: none;
+        width: 64px;
+        height: 64px;
+        margin: 0;
+        padding: 0 0 10px;
+      }
+      figure svg, figure img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      section p:last-child { margin-bottom: 0; }
+      @media screen and (min-width: 600px) {
+        main {
+          -webkit-box-orient: horizontal;
+          -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+          flex-direction: row;
+          -webkit-box-align: start;
+          -ms-flex-align: start;
+          -ms-grid-row-align: flex-start;
+          align-items: flex-start;
+          padding: 40px;
+        }
+        figure {
+          flex: none;
+          width: 84px;
+          height: 84px;
+          margin: 0;
+          padding: 0 20px 0 0;
+        }
+        h1 {
+          font-size: 44px;
+          font-weight: 400;
+          text-align: left;
+        }
+        p { font-size: 20px; }
+      }
+      @-webkit-keyframes bounceInUp {
+          0%,100%,60%,75%,90% {-webkit-animation-timing-function: cubic-bezier(0.215,.61,.355,1);animation-timing-function: cubic-bezier(0.215,.61,.355,1)}
+          0% {opacity: 0;-webkit-transform: translate3d(0,3000px,0);transform: translate3d(0,3000px,0)}
+          60% {opacity: 1;-webkit-transform: translate3d(0,-20px,0);transform: translate3d(0,-20px,0)}
+          75% {-webkit-transform: translate3d(0,10px,0);transform: translate3d(0,10px,0)}
+          90% {-webkit-transform: translate3d(0,-5px,0);transform: translate3d(0,-5px,0)}
+          100% {-webkit-transform: translate3d(0,0,0);transform: translate3d(0,0,0)}
+      }
+      @keyframes bounceInUp {
+          0%,100%,60%,75%,90% {-webkit-animation-timing-function: cubic-bezier(0.215,.61,.355,1);animation-timing-function: cubic-bezier(0.215,.61,.355,1)}
+          0% {opacity: 0;-webkit-transform: translate3d(0,3000px,0);transform: translate3d(0,3000px,0)}
+          60% {opacity: 1;-webkit-transform: translate3d(0,-20px,0);transform: translate3d(0,-20px,0)}
+          75% {-webkit-transform: translate3d(0,10px,0);transform: translate3d(0,10px,0)}
+          90% {-webkit-transform: translate3d(0,-5px,0);transform: translate3d(0,-5px,0)}
+          100% {-webkit-transform: translate3d(0,0,0);transform: translate3d(0,0,0)}
+      }
+    </style>
+  </head>
+  <body>
+
+    <main>
+      <figure>
+        <svg viewBox="0 0 128 128"><path d="M128,28.78L90.348,4L64,26.167l37.964,23.626 L128,28.78z M64.077,78.191l-26.424,22.102l-11.308-7.443v8.342L64.077,124l37.732-22.808v-8.342l-11.308,7.443L64.077,78.191z M37.653,4L0.001,28.779l26.036,21.014l37.964-23.626L37.653,4z M64,73.422L37.652,95.589L0,70.809l26.036-21.014L64,73.422 l37.963-23.63l26.036,21.018L90.347,95.589L64,73.422L64,73.422z" fill="#0F82E2"></path></svg>
+      </figure>
+      <section>
+        <header><h1>Confirm Sending Data</h1></header>
+        <p>To prevent possible phishing attacks, you need to manually confirm that it's OK to send the Dropbox authorization data to your Plesk instance.</p>
+        <p>Click the link below to continue.</p>
+        <p><a id="redirect-link" href="#!">Destination URL was not found in the query.</a></p>
+      </section>
+    </main>
+
+    <script>
+      (function() {
+        var link = document.getElementById('redirect-link');
+        var origin = parseUrl(window.location.href);
+        var redirect = origin.state['redirect-plesk'];
+        if (redirect) {
+          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + origin.search.substr(1);
+          link.href = redirect;
+          link.innerHTML = redirect;
+        }
+
+        function parseUrl(url) {
+          var a = document.createElement('a');
+          a.href = url;
+          var params = splitParams(a.search.substr(1).split('&'));
+          params.state = params.state || '';
+          var state = splitParams(params.state.split('|'));
+          return {
+            hostname: a.hostname,
+            search: a.search,
+            params: params,
+            state: state,
+          };
+        }
+
+        function splitParams(params) {
+          params = params || [];
+          var pairs = {};
+          params.map(function (param) {
+            return param.split('=');
+          }).forEach(function (param) {
+            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
+            pairs[name] = value;
+          });
+          return pairs;
+        }
+      })();
+    </script>
+
+  </body>
+</html>
