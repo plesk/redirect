@@ -135,33 +135,24 @@
         <header><h1>Confirm Sending Data</h1></header>
         <p>To prevent possible phishing attacks, you need to manually confirm that it's OK to send the Dropbox authorization data to your Plesk instance.</p>
         <p>Click the link below to continue.</p>
-        <p><a id="redirect-link" href="#!">Destination URL was not found in the query.</a></p>
+        <p><a id="redirect-link">Destination URL was not found in the query.</a></p>
       </section>
     </main>
 
     <script>
       (function() {
         var link = document.getElementById('redirect-link');
-        var origin = parseUrl(window.location.href);
-        var redirect = origin.state['redirect-plesk'];
+        var redirect = getStateParam(window.location)['redirect-plesk'];
         if (redirect) {
-          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + origin.search.substr(1);
+          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
           link.href = redirect;
           link.innerHTML = redirect;
         }
 
-        function parseUrl(url) {
-          var a = document.createElement('a');
-          a.href = url;
-          var params = splitParams(a.search.substr(1).split('&'));
+        function getStateParam(location) {
+          var params = splitParams(location.search.substr(1).split('&'));
           params.state = params.state || '';
-          var state = splitParams(params.state.split('|'));
-          return {
-            hostname: a.hostname,
-            search: a.search,
-            params: params,
-            state: state,
-          };
+          return splitParams(params.state.split('|'));
         }
 
         function splitParams(params) {
