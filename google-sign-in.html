@@ -85,6 +85,19 @@
         height: 100%;
       }
       section p:last-child { margin-bottom: 0; }
+      label {
+        display: inline-block;
+        padding-left: 1.5rem;
+      }
+      input[type=checkbox] {
+        box-sizing: border-box;
+        position: absolute;
+        margin-top: 0.36rem;
+        margin-left: -1.5rem;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+      }
       @media screen and (min-width: 600px) {
         main {
           -webkit-box-orient: horizontal;
@@ -134,11 +147,17 @@
 
     <main>
       <figure>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="14 14 18 18"><g fill="none" fill-rule="evenodd"><path fill="#4285F4" d="M31.64 23.205c0-.64-.057-1.252-.164-1.84H23v3.48h4.844a4.14 4.14 0 0 1-1.796 2.716v2.26h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M23 32c2.43 0 4.467-.806 5.956-2.18l-2.908-2.26c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.583-5.036-3.71h-3.007v2.332A8.997 8.997 0 0 0 23 32z"/><path fill="#FBBC05" d="M17.964 24.71a5.41 5.41 0 0 1-.282-1.71c0-.593.102-1.17.282-1.71v-2.332h-3.007A8.996 8.996 0 0 0 14 23c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M23 17.58c1.32 0 2.508.454 3.44 1.345l2.582-2.58C27.462 14.89 25.426 14 23 14a8.997 8.997 0 0 0-8.043 4.958l3.007 2.332c.708-2.127 2.692-3.71 5.036-3.71z"/><path d="M14 14h18v18H14z"/></g></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="14 14 18 18"><g fill="none" fill-rule="evenodd"><path fill="#4285F4" d="M31.64 23.205c0-.64-.057-1.252-.164-1.84H23v3.48h4.844a4.14 4.14 0 0 1-1.796 2.716v2.26h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M23 32c2.43 0 4.467-.806 5.956-2.18l-2.908-2.26c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.583-5.036-3.71h-3.007v2.332A8.997 8.997 0 0 0 23 32z"/><path fill="#FBBC05" d="M17.964 24.71a5.41 5.41 0 0 1-.282-1.71c0-.593.102-1.17.282-1.71v-2.332h-3.007A8.996 8.996 0 0 0 14 23c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M23 17.58c1.32 0 2.508.454 3.44 1.345l2.582-2.58C27.462 14.89 25.426 14 23 14a8.997 8.997 0 0 0-8.043 4.958l3.007 2.332c.708-2.127 2.692-3.71 5.036-3.71z"/><path d="M14 14h18v18H14z"/></g></svg>
       </figure>
       <section>
         <header><h1>Confirm Sending Data</h1></header>
         <p>To prevent possible phishing attacks, you need to manually confirm that it's OK to send the Google Sign-In data to your Plesk instance.</p>
+        <p>
+          <label for="auto-confirm">
+            <input type="checkbox" id="auto-confirm">
+            Do not show next time (auto-confirmation). We will use cookies to store the data in your browser.
+          </label>
+        </p>
         <p>Click the link below to continue.</p>
         <p><a id="redirect-link">Destination URL was not found in the query.</a></p>
       </section>
@@ -147,11 +166,21 @@
     <script>
       (function() {
         var link = document.getElementById('redirect-link');
+        var autoConfirm = document.getElementById('auto-confirm');
         var redirect = getStateParam(window.location)['redirect-plesk'];
         if (redirect) {
           redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
+          var baseUrl = redirect.substr(0, redirect.indexOf('?'));
           link.href = redirect;
-          link.innerHTML = redirect.substr(0, redirect.indexOf('?')) + '...';
+          link.innerHTML = baseUrl + '...';
+          link.onclick = function () {
+            if (autoConfirm.checked) {
+              addTrustedUrl(baseUrl);
+            }
+          };
+          if (isTrustedUrl(baseUrl)) {
+            window.location.href = redirect;
+          }
         }
 
         function getStateParam(location) {
@@ -170,6 +199,39 @@
             pairs[name] = value;
           });
           return pairs;
+        }
+
+        function addTrustedUrl(url) {
+          var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+          setCookie('trustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
+        }
+
+        function isTrustedUrl(url) {
+            var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+            return trustedUrls.indexOf(url) > -1;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+          var d = new Date();
+          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + d.toUTCString();
+          var secure = window.location.protocol === "https:" ? ";secure" : '';
+          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + secure;
+        }
+
+        function getCookie(cname) {
+          var name = cname + "=";
+          var ca = document.cookie.split(';');
+          for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
         }
       })();
     </script>
