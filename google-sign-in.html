@@ -4,6 +4,85 @@
     <meta charset='utf-8'>
     <meta http-equiv='x-ua-compatible' content='ie=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script>
+      (function() {
+        var redirect = getStateParam(window.location)['redirect-plesk'];
+        if (redirect) {
+          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
+          var baseUrl = redirect.substr(0, redirect.indexOf('?'));
+          if (isTrustedUrl(baseUrl)) {
+            window.location.href = redirect;
+          }
+          document.addEventListener("DOMContentLoaded", function (event) {
+            var link = document.getElementById('redirect-link');
+            var autoConfirm = document.getElementById('auto-confirm');
+            if (!link) {
+              return;
+            }
+            link.href = redirect;
+            link.innerHTML = baseUrl + '...';
+            link.onclick = function () {
+              if (autoConfirm && autoConfirm.checked) {
+                addTrustedUrl(baseUrl);
+              }
+            };
+          });
+        }
+
+        function getStateParam(location) {
+          var params = splitParams(location.search.substr(1).split('&'));
+          params.state = params.state || '';
+          return splitParams(params.state.split('|'));
+        }
+
+        function splitParams(params) {
+          params = params || [];
+          var pairs = {};
+          params.map(function (param) {
+            return param.split('=');
+          }).forEach(function (param) {
+            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
+            pairs[name] = value;
+          });
+          return pairs;
+        }
+
+        function addTrustedUrl(url) {
+          var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+          setCookie('trustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
+        }
+
+        function isTrustedUrl(url) {
+            var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+            return trustedUrls.indexOf(url) > -1;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+          var exDate = new Date();
+          exDate.setTime(exDate.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + exDate.toUTCString();
+          var secure = window.location.protocol === "https:" ? ";secure" : '';
+          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + secure;
+        }
+
+        function getCookie(cname) {
+          var name = cname + "=";
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            while (cookie.charAt(0) == ' ') {
+              cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name) == 0) {
+              return cookie.substring(name.length, cookie.length);
+            }
+          }
+          return "";
+        }
+      })();
+    </script>
+
     <style>
       html {
         font: normal 16px/1.4 Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -162,79 +241,6 @@
         <p><a id="redirect-link">Destination URL was not found in the query.</a></p>
       </section>
     </main>
-
-    <script>
-      (function() {
-        var link = document.getElementById('redirect-link');
-        var autoConfirm = document.getElementById('auto-confirm');
-        var redirect = getStateParam(window.location)['redirect-plesk'];
-        if (redirect) {
-          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
-          var baseUrl = redirect.substr(0, redirect.indexOf('?'));
-          link.href = redirect;
-          link.innerHTML = baseUrl + '...';
-          link.onclick = function () {
-            if (autoConfirm.checked) {
-              addTrustedUrl(baseUrl);
-            }
-          };
-          if (isTrustedUrl(baseUrl)) {
-            window.location.href = redirect;
-          }
-        }
-
-        function getStateParam(location) {
-          var params = splitParams(location.search.substr(1).split('&'));
-          params.state = params.state || '';
-          return splitParams(params.state.split('|'));
-        }
-
-        function splitParams(params) {
-          params = params || [];
-          var pairs = {};
-          params.map(function (param) {
-            return param.split('=');
-          }).forEach(function (param) {
-            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
-            pairs[name] = value;
-          });
-          return pairs;
-        }
-
-        function addTrustedUrl(url) {
-          var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
-          setCookie('trustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
-        }
-
-        function isTrustedUrl(url) {
-            var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
-            return trustedUrls.indexOf(url) > -1;
-        }
-
-        function setCookie(cname, cvalue, exdays) {
-          var exDate = new Date();
-          exDate.setTime(exDate.getTime() + (exdays * 24 * 60 * 60 * 1000));
-          var expires = "expires=" + exDate.toUTCString();
-          var secure = window.location.protocol === "https:" ? ";secure" : '';
-          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + secure;
-        }
-
-        function getCookie(cname) {
-          var name = cname + "=";
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            while (cookie.charAt(0) == ' ') {
-              cookie = cookie.substring(1);
-            }
-            if (cookie.indexOf(name) == 0) {
-              return cookie.substring(name.length, cookie.length);
-            }
-          }
-          return "";
-        }
-      })();
-    </script>
 
   </body>
 </html>
