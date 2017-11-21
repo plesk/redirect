@@ -27,6 +27,10 @@
                 addTrustedUrl(baseUrl);
               }
             };
+            var toReplace = document.querySelectorAll('.hostname');
+            Array.prototype.forEach.call(toReplace, function (element) {
+              element.innerHTML = link.hostname;
+            });
           });
         }
 
@@ -177,6 +181,7 @@
         width: 16px;
         height: 16px;
       }
+      .hostname { border-bottom: 1px dashed #2498e3; }
       @media screen and (min-width: 600px) {
         main {
           -webkit-box-orient: horizontal;
@@ -230,11 +235,11 @@
       </figure>
       <section>
         <header><h1>Confirm Sending Data</h1></header>
-        <p>To prevent possible phishing attacks, you need to manually confirm that it's OK to send the Google Sign-In data to your Plesk instance.</p>
+        <p>To prevent possible phishing attacks, you need to manually confirm sending the Google Sign-In data to the Plesk instance with hostname <span class="hostname">undefined</span>.</p>
         <p>
           <label for="auto-confirm">
             <input type="checkbox" id="auto-confirm">
-            Do not show next time (auto-confirmation). We will use cookies to store the data in your browser.
+            Trust <span class="hostname">hostname</span> for 365 days and do not show this dialog (we will use cookies to store the data in your browser).
           </label>
         </p>
         <p>Click the link below to continue.</p>
