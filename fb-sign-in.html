@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='x-ua-compatible' content='ie=edge'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script>
+      (function() {
+        var redirect = getStateParam(window.location)['redirect-plesk'];
+        if (redirect) {
+          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
+          var baseUrl = redirect.substr(0, redirect.indexOf('?'));
+          if (isTrustedUrl(baseUrl)) {
+            window.location.href = redirect;
+          }
+          document.addEventListener("DOMContentLoaded", function (event) {
+            var link = document.getElementById('redirect-link');
+            var autoConfirm = document.getElementById('auto-confirm');
+            if (!link) {
+              return;
+            }
+            link.href = redirect;
+            link.innerHTML = baseUrl + '...';
+            link.onclick = function () {
+              if (autoConfirm && autoConfirm.checked) {
+                addTrustedUrl(baseUrl);
+              }
+            };
+            var toReplace = document.querySelectorAll('.hostname');
+            Array.prototype.forEach.call(toReplace, function (element) {
+              element.innerHTML = link.hostname;
+            });
+          });
+        }
+
+        function getStateParam(location) {
+          var params = splitParams(location.search.substr(1).split('&'));
+          params.state = params.state || '';
+          return splitParams(params.state.split('|'));
+        }
+
+        function splitParams(params) {
+          params = params || [];
+          var pairs = {};
+          params.map(function (param) {
+            return param.split('=');
+          }).forEach(function (param) {
+            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
+            pairs[name] = value;
+          });
+          return pairs;
+        }
+
+        function addTrustedUrl(url) {
+          var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+          setCookie('trustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
+        }
+
+        function isTrustedUrl(url) {
+            var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+            return trustedUrls.indexOf(url) > -1;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+          var exDate = new Date();
+          exDate.setTime(exDate.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + exDate.toUTCString();
+          var secure = window.location.protocol === "https:" ? ";secure" : '';
+          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + secure;
+        }
+
+        function getCookie(cname) {
+          var name = cname + "=";
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            while (cookie.charAt(0) == ' ') {
+              cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name) == 0) {
+              return cookie.substring(name.length, cookie.length);
+            }
+          }
+          return "";
+        }
+      })();
+    </script>
+
+    <style>
+      html {
+        font: normal 16px/1.4 Arial, "Helvetica Neue", Helvetica, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        overflow-y: scroll;color: #000;
+      }
+      html,body {
+        height: 100%;
+        min-height: 100%;
+      }
+      body {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        margin: 0;
+        padding: 20px;
+        background-color: #dedede;
+        box-sizing: border-box;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -ms-grid-row-align: center;
+        align-items: center;
+      }
+      a { background-color: transparent; }
+      a:active,
+      a:hover { outline: 0; }
+      a {
+        color: #2498e3;
+        text-decoration: none;
+        cursor: pointer;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+      }
+      a:hover {
+        color: #188dd9;
+        text-decoration: underline;
+      }
+      h1 {
+        margin: 0;
+        padding: 0;
+        font-size: 24px;
+        line-height: 1;
+        text-align: center;
+      }
+      main {
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -ms-grid-row-align: center;
+        align-items: center;
+        margin: auto;
+        padding: 20px;
+        max-width: 900px;
+        background: #fff;
+        border-radius: 0.625rem;
+        box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+        -webkit-animation: bounceInUp 1s;
+        animation: bounceInUp 1s;
+      }
+      figure {
+        flex: none;
+        width: 64px;
+        height: 64px;
+        margin: 0;
+        padding: 0 0 10px;
+      }
+      figure svg, figure img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      section p:last-child { margin-bottom: 0; }
+      label {
+        display: inline-block;
+        padding-left: 1.5rem;
+      }
+      input[type=checkbox] {
+        box-sizing: border-box;
+        position: absolute;
+        margin-top: 0.36rem;
+        margin-left: -1.5rem;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+      }
+      .hostname { border-bottom: 1px dashed #2498e3; }
+      @media screen and (min-width: 600px) {
+        main {
+          -webkit-box-orient: horizontal;
+          -webkit-box-direction: normal;
+          -ms-flex-direction: row;
+          flex-direction: row;
+          -webkit-box-align: start;
+          -ms-flex-align: start;
+          -ms-grid-row-align: flex-start;
+          align-items: flex-start;
+          padding: 40px;
+        }
+        figure {
+          flex: none;
+          width: 84px;
+          height: 84px;
+          margin: 0;
+          padding: 0 20px 0 0;
+        }
+        h1 {
+          font-size: 44px;
+          font-weight: 400;
+          text-align: left;
+        }
+        p { font-size: 20px; }
+      }
+      @-webkit-keyframes bounceInUp {
+          0%,100%,60%,75%,90% {-webkit-animation-timing-function: cubic-bezier(0.215,.61,.355,1);animation-timing-function: cubic-bezier(0.215,.61,.355,1)}
+          0% {opacity: 0;-webkit-transform: translate3d(0,3000px,0);transform: translate3d(0,3000px,0)}
+          60% {opacity: 1;-webkit-transform: translate3d(0,-20px,0);transform: translate3d(0,-20px,0)}
+          75% {-webkit-transform: translate3d(0,10px,0);transform: translate3d(0,10px,0)}
+          90% {-webkit-transform: translate3d(0,-5px,0);transform: translate3d(0,-5px,0)}
+          100% {-webkit-transform: translate3d(0,0,0);transform: translate3d(0,0,0)}
+      }
+      @keyframes bounceInUp {
+          0%,100%,60%,75%,90% {-webkit-animation-timing-function: cubic-bezier(0.215,.61,.355,1);animation-timing-function: cubic-bezier(0.215,.61,.355,1)}
+          0% {opacity: 0;-webkit-transform: translate3d(0,3000px,0);transform: translate3d(0,3000px,0)}
+          60% {opacity: 1;-webkit-transform: translate3d(0,-20px,0);transform: translate3d(0,-20px,0)}
+          75% {-webkit-transform: translate3d(0,10px,0);transform: translate3d(0,10px,0)}
+          90% {-webkit-transform: translate3d(0,-5px,0);transform: translate3d(0,-5px,0)}
+          100% {-webkit-transform: translate3d(0,0,0);transform: translate3d(0,0,0)}
+      }
+    </style>
+    <title>Confirm Sending Data</title>
+  </head>
+  <body>
+
+    <main>
+      <figure>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="14 14 18 18"><g fill="none" fill-rule="evenodd"><path fill="#4285F4" d="M31.64 23.205c0-.64-.057-1.252-.164-1.84H23v3.48h4.844a4.14 4.14 0 0 1-1.796 2.716v2.26h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M23 32c2.43 0 4.467-.806 5.956-2.18l-2.908-2.26c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.583-5.036-3.71h-3.007v2.332A8.997 8.997 0 0 0 23 32z"/><path fill="#FBBC05" d="M17.964 24.71a5.41 5.41 0 0 1-.282-1.71c0-.593.102-1.17.282-1.71v-2.332h-3.007A8.996 8.996 0 0 0 14 23c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M23 17.58c1.32 0 2.508.454 3.44 1.345l2.582-2.58C27.462 14.89 25.426 14 23 14a8.997 8.997 0 0 0-8.043 4.958l3.007 2.332c.708-2.127 2.692-3.71 5.036-3.71z"/><path d="M14 14h18v18H14z"/></g></svg>
+      </figure>
+      <section>
+        <header><h1>Confirm Sending Data</h1></header>
+        <p>To prevent possible phishing attacks, you need to manually confirm sending the Facebook Sign-In data to the Plesk instance with hostname <span class="hostname">undefined</span>.</p>
+        <p>
+          <label for="auto-confirm">
+            <input type="checkbox" id="auto-confirm">
+            Trust <span class="hostname">hostname</span> for 365 days and do not show this dialog (we will use cookies to store the data in your browser).
+          </label>
+        </p>
+        <p>Click the link below to continue.</p>
+        <p><a id="redirect-link">Destination URL was not found in the query.</a></p>
+      </section>
+    </main>
+
+  </body>
+</html>
