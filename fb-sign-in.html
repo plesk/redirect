@@ -53,12 +53,12 @@
         }
 
         function addTrustedUrl(url) {
-          var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
-          setCookie('trustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
+          var trustedUrls = JSON.parse(getCookie('fbTrustedUrls') || '[]');
+          setCookie('fbTrustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
         }
 
         function isTrustedUrl(url) {
-            var trustedUrls = JSON.parse(getCookie('trustedUrls') || '[]');
+            var trustedUrls = JSON.parse(getCookie('fbTrustedUrls') || '[]');
             return trustedUrls.indexOf(url) > -1;
         }
 
