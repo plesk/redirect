@@ -151,7 +151,7 @@
         if (redirect) {
           redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
           link.href = redirect;
-          link.innerHTML = redirect.substr(0, redirect.indexOf('?')) + '...';
+          link.innerText = redirect.substr(0, redirect.indexOf('?')) + '...';
         }
 
         function getStateParam(location) {
