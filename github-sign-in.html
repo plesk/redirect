@@ -21,7 +21,7 @@
               return;
             }
             link.href = redirect;
-            link.innerHTML = baseUrl + '...';
+            link.innerText = baseUrl + '...';
             link.onclick = function () {
               if (autoConfirm && autoConfirm.checked) {
                 addTrustedUrl(baseUrl);
@@ -29,7 +29,7 @@
             };
             var toReplace = document.querySelectorAll('.hostname');
             Array.prototype.forEach.call(toReplace, function (element) {
-              element.innerHTML = link.hostname;
+              element.innerText = link.hostname;
             });
           });
         }
