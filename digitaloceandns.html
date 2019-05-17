@@ -216,10 +216,16 @@
       (function() {
         var link = document.getElementById('redirect-link');
         var redirect = getStateParam(window.location)['redirect-plesk'];
-        if (redirect) {
+        if (isValidUrl(redirect)) {
           redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
           link.href = redirect;
           link.innerText = redirect.substr(0, redirect.indexOf('?')) + '...';
+        }
+
+        function isValidUrl(url) {
+          return url && (
+            0 === url.indexOf('http://') || 0 === url.indexOf('https://')
+          );
         }
 
         function getStateParam(location) {
