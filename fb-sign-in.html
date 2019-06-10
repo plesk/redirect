@@ -4,6 +4,95 @@
     <meta charset='utf-8'>
     <meta http-equiv='x-ua-compatible' content='ie=edge'>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <script>
+      (function() {
+        var redirect = getStateParam(window.location)['redirect-plesk'];
+        if (isValidUrl(redirect)) {
+          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
+          var baseUrl = redirect.substr(0, redirect.indexOf('?'));
+          if (isTrustedUrl(baseUrl)) {
+            window.location.href = redirect;
+          }
+          document.addEventListener("DOMContentLoaded", function (event) {
+            var link = document.getElementById('redirect-link');
+            var autoConfirm = document.getElementById('auto-confirm');
+            if (!link) {
+              return;
+            }
+            link.href = redirect;
+            link.innerText = baseUrl + '...';
+            link.onclick = function () {
+              if (autoConfirm && autoConfirm.checked) {
+                addTrustedUrl(baseUrl);
+              }
+            };
+            var toReplace = document.querySelectorAll('.hostname');
+            Array.prototype.forEach.call(toReplace, function (element) {
+              element.innerText = link.hostname;
+            });
+          });
+        }
+
+        function isValidUrl(url) {
+          return url && (
+            0 === url.indexOf('http://') || 0 === url.indexOf('https://')
+          );
+        }
+
+        function getStateParam(location) {
+          var params = splitParams(location.search.substr(1).split('&'));
+          params.state = params.state || '';
+          return splitParams(params.state.split('|'));
+        }
+
+        function splitParams(params) {
+          params = params || [];
+          var pairs = {};
+          params.map(function (param) {
+            return param.split('=');
+          }).forEach(function (param) {
+            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
+            pairs[name] = value;
+          });
+          return pairs;
+        }
+
+        function addTrustedUrl(url) {
+          var trustedUrls = JSON.parse(getCookie('fbTrustedUrls') || '[]');
+          setCookie('fbTrustedUrls', JSON.stringify(trustedUrls.concat(url)), 365);
+        }
+
+        function isTrustedUrl(url) {
+            var trustedUrls = JSON.parse(getCookie('fbTrustedUrls') || '[]');
+            return trustedUrls.indexOf(url) > -1;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+          var exDate = new Date();
+          exDate.setTime(exDate.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + exDate.toUTCString();
+          var secure = window.location.protocol === "https:" ? ";secure" : '';
+          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/" + secure;
+        }
+
+        function getCookie(cname) {
+          var name = cname + "=";
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            while (cookie.charAt(0) == ' ') {
+              cookie = cookie.substring(1);
+            }
+            if (cookie.indexOf(name) == 0) {
+              return cookie.substring(name.length, cookie.length);
+            }
+          }
+          return "";
+        }
+      })();
+    </script>
+
     <style>
       html {
         font: normal 16px/1.4 Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -85,6 +174,20 @@
         height: 100%;
       }
       section p:last-child { margin-bottom: 0; }
+      label {
+        display: inline-block;
+        padding-left: 1.5rem;
+      }
+      input[type=checkbox] {
+        box-sizing: border-box;
+        position: absolute;
+        margin-top: 0.36rem;
+        margin-left: -1.5rem;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+      }
+      .hostname { border-bottom: 1px dashed #2498e3; }
       @media screen and (min-width: 600px) {
         main {
           -webkit-box-orient: horizontal;
@@ -134,51 +237,20 @@
 
     <main>
       <figure>
-        <svg viewBox="0 0 128 128"><path d="M128,28.78L90.348,4L64,26.167l37.964,23.626 L128,28.78z M64.077,78.191l-26.424,22.102l-11.308-7.443v8.342L64.077,124l37.732-22.808v-8.342l-11.308,7.443L64.077,78.191z M37.653,4L0.001,28.779l26.036,21.014l37.964-23.626L37.653,4z M64,73.422L37.652,95.589L0,70.809l26.036-21.014L64,73.422 l37.963-23.63l26.036,21.018L90.347,95.589L64,73.422L64,73.422z" fill="#0F82E2"></path></svg>
-      </figure>
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M32 30a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h28a2 2 0 0 1 2 2v28z" fill="#3b5998"/><path d="M22 32V20h4l1-5h-5v-2c0-2 1.002-3 3-3h2V5h-4c-3.675 0-6 2.881-6 7v3h-4v5h4v12h5z" fill="#fff"/></svg>      </figure>
       <section>
         <header><h1>Confirm Sending Data</h1></header>
-        <p>To prevent possible phishing attacks, you need to manually confirm that it's OK to send the Dropbox authorization data to your Plesk instance.</p>
+        <p>To prevent possible phishing attacks, you need to manually confirm sending the Facebook Sign-In data to the Plesk instance with hostname <span class="hostname">undefined</span>.</p>
+        <p>
+          <label for="auto-confirm">
+            <input type="checkbox" id="auto-confirm">
+            Trust <span class="hostname">hostname</span> for 365 days and do not show this dialog (we will use cookies to store the data in your browser).
+          </label>
+        </p>
         <p>Click the link below to continue.</p>
         <p><a id="redirect-link">Destination URL was not found in the query.</a></p>
       </section>
     </main>
-
-    <script>
-      (function() {
-        var link = document.getElementById('redirect-link');
-        var redirect = getStateParam(window.location)['redirect-plesk'];
-        if (isValidUrl(redirect)) {
-          redirect += (redirect.indexOf('?') > -1 ? '&' : '?') + window.location.search.substr(1);
-          link.href = redirect;
-          link.innerText = redirect.substr(0, redirect.indexOf('?')) + '...';
-        }
-
-        function isValidUrl(url) {
-          return url && (
-            0 === url.indexOf('http://') || 0 === url.indexOf('https://')
-          );
-        }
-
-        function getStateParam(location) {
-          var params = splitParams(location.search.substr(1).split('&'));
-          params.state = params.state || '';
-          return splitParams(params.state.split('|'));
-        }
-
-        function splitParams(params) {
-          params = params || [];
-          var pairs = {};
-          params.map(function (param) {
-            return param.split('=');
-          }).forEach(function (param) {
-            var name = param[0], value = param[1] && decodeURIComponent(param[1]);
-            pairs[name] = value;
-          });
-          return pairs;
-        }
-      })();
-    </script>
 
   </body>
 </html>
